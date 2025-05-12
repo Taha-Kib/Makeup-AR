@@ -1,12 +1,7 @@
-# React + Vite
+# Makeup AR App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a makeup AR application. It allows user to select Wigs, brows and lashes and try them on.
 
-Currently, two official plugins are available:
+The images used are static files so had to manually adjust them
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Made using React + Vite
