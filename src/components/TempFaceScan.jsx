@@ -5,7 +5,7 @@ import { FaceMesh } from "@mediapipe/face_mesh";
 import { Camera } from "@mediapipe/camera_utils";
 import { useSelections } from "../SelectionContext";
 import { ImageOffsets, BrowsOffsets, LashesOffsets } from "./CommonStyles";
-import BrowLeft from "../assets/brows/brow-medium-arch-left.png";
+import HairImg from "../assets/loose-straight-long.png";
 import BrowRight from "../assets/brows/brow-medium-arch-right.png";
 import styled from "styled-components";
 import { Button } from "./CommonStyles";
@@ -36,7 +36,7 @@ function FaceScanNEW() {
   const wigImgRef = useRef(null);
 
   // const wimg = new Image();
-  // wimg.src = BunMessy;
+  // wimg.src = HairImg;
   // wigImgRef.current = wimg;
 
   const eyebrowLeftRef = useRef(null);
@@ -153,7 +153,6 @@ function FaceScanNEW() {
 
     function onResults(results) {
       const wigImg = wigImgRef.current;
-      // const eyebrowImg = eyebrowImgRef.current;
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
 
@@ -163,37 +162,8 @@ function FaceScanNEW() {
 
       if (results.multiFaceLandmarks?.length > 0 && showWigRef.current) {
         const landmarks = results.multiFaceLandmarks[0];
-        const topHead = landmarks[0];
-        const leftTemple = landmarks[234];
-        const rightTemple = landmarks[454];
 
-        const centerX = topHead.x * canvas.width;
-        const centerY = topHead.y * canvas.height;
-        const templeWidth =
-          Math.abs(leftTemple.x - rightTemple.x) * canvas.width;
-
-        const selectedKey = selections.hairLength || selections.hairStyle;
-        const matchedOffset = ImageOffsets.find(
-          (offset) => offset.key === selectedKey
-        );
-        if (wigImg) {
-          const { offsetWidth, offsetHeight, yPos, xPos } = matchedOffset;
-          const wigWidth = templeWidth * offsetWidth;
-          const wigHeight = offsetHeight
-            ? wigWidth * offsetHeight
-            : wigWidth * (wigImg.height / wigImg.width);
-          const offsetY = wigHeight * yPos;
-
-          ctx.drawImage(
-            wigImg,
-            centerX - wigWidth / xPos,
-            centerY - offsetY,
-            wigWidth,
-            wigHeight
-          );
-        }
-
-        // Draw eyebrows if loaded
+        // === Draw Brows First ===
         const eyebrowLeft = eyebrowLeftRef.current;
         const eyebrowRight = eyebrowRightRef.current;
 
@@ -215,7 +185,6 @@ function FaceScanNEW() {
             );
           };
 
-          // Get the offsets
           const leftOffset = BrowsOffsets.find(
             (o) => o.key === `${selections.browType}-left`
           );
@@ -223,7 +192,6 @@ function FaceScanNEW() {
             (o) => o.key === `${selections.browType}-right`
           );
 
-          // Call the drawing function with correct offsets
           drawEyebrow(
             70,
             63,
@@ -240,6 +208,7 @@ function FaceScanNEW() {
           );
         }
 
+        // === Draw Lashes Next ===
         const lashLeftImg = lashLeftImgRef.current;
         const lashRightImg = lashRightImgRef.current;
 
@@ -267,7 +236,6 @@ function FaceScanNEW() {
             );
           };
 
-          // Get the offsets for left and right lash
           const leftOffset = LashesOffsets.find(
             (o) => o.key === `${selections.eyelashType}-left`
           );
@@ -275,7 +243,6 @@ function FaceScanNEW() {
             (o) => o.key === `${selections.eyelashType}-right`
           );
 
-          // Draw the lashes with the found offsets
           drawLash(
             33,
             133,
@@ -289,6 +256,36 @@ function FaceScanNEW() {
             lashRightImg,
             rightOffset?.offsetX ?? 0,
             rightOffset?.offsetY ?? 0
+          );
+        }
+
+        // === Draw Wig LAST ===
+        const topHead = landmarks[0];
+        const leftTemple = landmarks[234];
+        const rightTemple = landmarks[454];
+        const centerX = topHead.x * canvas.width;
+        const centerY = topHead.y * canvas.height;
+        const templeWidth =
+          Math.abs(leftTemple.x - rightTemple.x) * canvas.width;
+
+        const selectedKey = selections.hairLength || selections.hairStyle;
+        const matchedOffset = ImageOffsets.find(
+          (offset) => offset.key === selectedKey
+        );
+        if (wigImg) {
+          const { offsetWidth, offsetHeight, yPos, xPos } = matchedOffset;
+          const wigWidth = templeWidth * offsetWidth;
+          const wigHeight = offsetHeight
+            ? wigWidth * offsetHeight
+            : wigWidth * (wigImg.height / wigImg.width);
+          const offsetY = wigHeight * yPos;
+
+          ctx.drawImage(
+            wigImg,
+            centerX - wigWidth / xPos,
+            centerY - offsetY,
+            wigWidth,
+            wigHeight
           );
         }
       }
