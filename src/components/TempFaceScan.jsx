@@ -110,8 +110,6 @@ function FaceScanNEW() {
     const matchedLeftImage = lashImages[leftLashPath];
     const matchedRightImage = lashImages[rightLashPath];
 
-    console.log("matchedLeftImage", matchedLeftImage)
-
     if (matchedLeftImage && matchedRightImage) {
       const leftImg = new Image();
       const rightImg = new Image();
@@ -276,9 +274,6 @@ function FaceScanNEW() {
           const rightOffset = LashesOffsets.find(
             (o) => o.key === `${selections.eyelashType}-right`
           );
-
-          console.log("leftOffset", leftOffset)
-          console.log("rightOffset", rightOffset)
 
           // Draw the lashes with the found offsets
           drawLash(

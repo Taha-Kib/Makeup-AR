@@ -6,9 +6,9 @@ import PonyMessyLong from "../../assets/pony-messy-long.png";
 import PonySlickShort from "../../assets/pony-slick-short.png";
 import PonySlickMedium from "../../assets/pony-slick-medium.png";
 import PonySlickLong from "../../assets/pony-slick-long.png";
-import PonyBangShort from "../../assets/pony-bang-short.png";
-import PonyBangMedium from "../../assets/pony-bang-medium.png";
-import PonyBangLong from "../../assets/pony-bang-long.png";
+import PonyBangShort from "../../assets/pony-bangs-short.png";
+import PonyBangMedium from "../../assets/pony-bangs-medium.png";
+import PonyBangLong from "../../assets/pony-bangs-long.png";
 
 import LooseCurlyShort from "../../assets/loose-curly-short.png";
 import LooseCurlyMedium from "../../assets/loose-curly-medium.png";
