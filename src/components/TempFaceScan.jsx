@@ -6,7 +6,8 @@ import { Camera } from "@mediapipe/camera_utils";
 import { useSelections } from "../SelectionContext";
 import { ImageOffsets, BrowsOffsets, LashesOffsets } from "./CommonStyles";
 import HairImg from "../assets/loose-straight-long.png";
-import BrowRight from "../assets/brows/brow-medium-arch-right.png";
+import BrowLeft from "../assets/brows/brow-soft-arch-left.png";
+import BrowRight from "../assets/brows/brow-soft-arch-right.png";
 import styled from "styled-components";
 import { Button } from "./CommonStyles";
 import { useNavigate } from "react-router-dom";
@@ -168,44 +169,45 @@ function FaceScanNEW() {
         const eyebrowRight = eyebrowRightRef.current;
 
         if (eyebrowLeft && eyebrowRight) {
-          const drawEyebrow = (startIdx, endIdx, img, adjustX, adjustY) => {
+          const drawEyebrow = (startIdx, endIdx, img, isLeft, adjustY) => {
             const start = landmarks[startIdx];
             const end = landmarks[endIdx];
+
             const x = start.x * canvas.width;
             const y = start.y * canvas.height;
-            const width = Math.abs(end.x - start.x) * canvas.width * 10;
+
+            const faceDistance = Math.abs(landmarks[10].z - landmarks[152].z);
+            const distanceFactor = Math.max(
+              0.8,
+              Math.min(1.2, 0.7 / faceDistance)
+            );
+
+            const width =
+              Math.abs(end.x - start.x) * canvas.width * 8.5 * distanceFactor;
             const height = width * (img.height / img.width);
+
+            const faceWidth =
+              Math.abs(landmarks[234].x - landmarks[454].x) * canvas.width;
+
+            // ✅ Fine-tuned inward adjustment
+            const inwardOffset = faceWidth * -0.13; // ~2.5% of face width, tune this
+
+            const horizontalAdjustment = isLeft
+              ? -inwardOffset // move left brow rightward (toward center)
+              : inwardOffset; // move right brow leftward (toward center)
 
             ctx.drawImage(
               img,
-              x - width / 2 + adjustX,
-              y - height / 2 + adjustY,
+              x - width / 2 + horizontalAdjustment,
+              y - height / 2 + adjustY * distanceFactor,
               width,
               height
             );
           };
 
-          const leftOffset = BrowsOffsets.find(
-            (o) => o.key === `${selections.browType}-left`
-          );
-          const rightOffset = BrowsOffsets.find(
-            (o) => o.key === `${selections.browType}-right`
-          );
-
-          drawEyebrow(
-            70,
-            63,
-            eyebrowLeft,
-            leftOffset?.offsetX ?? 0,
-            leftOffset?.offsetY ?? 0
-          );
-          drawEyebrow(
-            300,
-            293,
-            eyebrowRight,
-            rightOffset?.offsetX ?? 0,
-            rightOffset?.offsetY ?? 0
-          );
+          // === Draw both eyebrows ===
+          drawEyebrow(70, 63, eyebrowLeft, true, 0);
+          drawEyebrow(300, 293, eyebrowRight, false, -0.8);
         }
 
         // === Draw Lashes Next ===
