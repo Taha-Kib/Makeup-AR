@@ -205,9 +205,14 @@ function FaceScanNEW() {
             );
           };
 
+          const leftBrowYoffset =
+            selections?.browType === "brow-high-arch" ? -1 : 0;
+          const rightBrowYoffset =
+            selections?.browType === "brow-high-arch" ? -2 : -0.5;
+
           // === Draw both eyebrows ===
-          drawEyebrow(70, 63, eyebrowLeft, true, 0);
-          drawEyebrow(300, 293, eyebrowRight, false, -0.8);
+          drawEyebrow(70, 63, eyebrowLeft, true, leftBrowYoffset);
+          drawEyebrow(300, 293, eyebrowRight, false, rightBrowYoffset);
         }
 
         // === Draw Lashes Next ===
