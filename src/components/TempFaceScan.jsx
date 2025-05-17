@@ -12,8 +12,8 @@ import styled from "styled-components";
 import { Button } from "./CommonStyles";
 import { useNavigate } from "react-router-dom";
 
-import LashGlamLeft from "../assets/lashes/lash-wispy-left.png";
-import LashGlamRight from "../assets/lashes/lash-wispy-right.png";
+import LashGlamLeft from "../assets/lashes/lash-glam-left.png";
+import LashGlamRight from "../assets/lashes/lash-glam-right.png";
 
 function FaceScanNEW() {
   const webcamRef = useRef(null);
@@ -224,46 +224,52 @@ function FaceScanNEW() {
             startIdx,
             endIdx,
             img,
-            adjustX = 0,
-            adjustY = 0
+            isLeft,
+            verticalAdjust = 0
           ) => {
             const start = landmarks[startIdx];
             const end = landmarks[endIdx];
+
             const x = start.x * canvas.width;
             const y = start.y * canvas.height;
-            const width = Math.abs(end.x - start.x) * canvas.width * 1.3;
+
+            const faceDistance = Math.abs(landmarks[10].z - landmarks[152].z);
+            const distanceFactor = Math.max(
+              0.8,
+              Math.min(1.2, 0.7 / faceDistance)
+            );
+
+            const eyeWidth = Math.abs(end.x - start.x) * canvas.width;
+            const width = eyeWidth * 1.1 * distanceFactor;
             const height = width * (img.height / img.width);
+
+            const faceWidth =
+              Math.abs(landmarks[234].x - landmarks[454].x) * canvas.width;
+
+            const inwardOffset = faceWidth * -0.07;
+
+            const horizontalAdjustment = isLeft ? -inwardOffset : inwardOffset;
 
             ctx.drawImage(
               img,
-              x - width / 2.5 + adjustX,
-              y - height / 1.5 + adjustY,
+              x - width / 2 + horizontalAdjustment,
+              y - height / 1.5 + verticalAdjust, // 👈 apply upward/downward shift
               width,
               height
             );
           };
 
-          const leftOffset = LashesOffsets.find(
-            (o) => o.key === `${selections.eyelashType}-left`
-          );
-          const rightOffset = LashesOffsets.find(
-            (o) => o.key === `${selections.eyelashType}-right`
-          );
+          const leftLashYoffset =
+            selections?.eyelashType === "lash-natural" ? -0.3 : -1;
+          const rightLashYoffset =
+            selections?.eyelashType === "lash-glam"
+              ? -1.5
+              : selections?.eyelashType === "lash-natural"
+              ? -0.5
+              : -2;
 
-          drawLash(
-            33,
-            133,
-            lashLeftImg,
-            leftOffset?.offsetX ?? 0,
-            leftOffset?.offsetY ?? 0
-          );
-          drawLash(
-            362,
-            263,
-            lashRightImg,
-            rightOffset?.offsetX ?? 0,
-            rightOffset?.offsetY ?? 0
-          );
+          drawLash(33, 133, lashLeftImg, true, leftLashYoffset);
+          drawLash(263, 362, lashRightImg, false, rightLashYoffset);
         }
 
         // === Draw Wig LAST ===
@@ -339,15 +345,26 @@ export default FaceScanNEW;
 
 const CanvasContainer = styled.canvas`
   display: block;
-  margin: 0 auto;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin: 20px auto 0 auto; /* space from heading */
   width: 1024px;
   height: 720px;
   border: 20px solid #000;
   border-radius: 10px;
+
+  @media (max-width: 1100px) {
+    width: 900px;
+    height: 633px; /* 900 / 1.422 = ~633 */
+  }
+
+  @media (max-width: 740px) {
+    width: 600px;
+    height: 600px; /* 600 / 1.422 = ~422 */
+  }
+
+  @media (max-width: 500px) {
+    width: 350px;
+    height: 500px; /* 600 / 1.422 = ~422 */
+  }
 `;
 
 const HeadingText = styled.div`
@@ -358,13 +375,17 @@ const HeadingText = styled.div`
   justify-content: center;
   display: flex;
   width: 100%;
+
+  @media (max-width: 740px) {
+    font-size: 50px;
+  }
 `;
 
 const ButtonWrapper = styled.div`
-  position: absolute;
-  top: calc(50% + 420px);
-  left: 50%;
-  transform: translateX(-50%);
+  margin: 20px auto 40px auto;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
 `;
 
 const StyledButton = styled(Button)`
